@@ -121,7 +121,16 @@ class J(private val src: Any? = null, private val forceObject: Boolean = true): 
         val chain = path.split(".").toMutableList()
         while(j!=null&& j.type !=Type.UNKNOWN){
             if(chain.isNotEmpty()){
-                j = j[chain.removeFirst()]
+                val key = chain.removeFirst()
+                if(key.isNotEmpty()){
+                    j = j[key]
+                    if(j?.type==Type.UNKNOWN){
+                        j = null
+                    }
+                }
+                else{
+                    j = null
+                }
             }
             else{
                 break
@@ -189,6 +198,8 @@ class J(private val src: Any? = null, private val forceObject: Boolean = true): 
             null
         }
     }
+
+
 
     fun forEachKey(block: (String)->Unit){
         json?.keys()?.forEach(block)

@@ -1,44 +1,69 @@
 package com.algogence.richtextcomposer
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import com.algogence.articleview.J
+import androidx.compose.ui.unit.dp
+import com.algogence.articleview.*
 import com.algogence.richtextcomposer.ui.theme.RichTextComposerTheme
 
 
 class MainActivity : ComponentActivity() {
-
+    private val j = J("""
+            {
+                "type":"surface",
+                "children":[
+                    {
+                        "type":"text",
+                        "value":"Hello, World"
+                    }
+                ]
+            }
+        """.trimIndent())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        J("""
-            {
-                "a":{
-                    "b":{
-                        "c":"d",
-                        "e":[
-                            1,2,3,4
-                        ]
+        setContent {
+            RichTextComposerTheme {
+                render()
+            }
+        }
+    }
+
+    @Composable
+    private fun render() {
+        renderView(j)
+    }
+
+    @Composable
+    private fun renderView(j: J) {
+        when(j.viewType){
+            JConst.surface->{
+                var m = Modifier
+                val t = m.then(m)
+                Surface(
+                    modifier = listOf(
+                        Modifier.width(0.dp)
+                    ).fold(t){a,e->
+                        a.then(e)
+                    }
+                ){
+                    j.forEachChildView {
+                        renderView(it)
                     }
                 }
             }
-        """.trimIndent()).apply {
-            Log.d("fdfdfsfsf", getByPath("a.b.e[1]")?.asArray()?.get(2)?.type?.name?:"")
-        }
-        setContent {
-            RichTextComposerTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = Color.White,
-                ) {
-
-                }
+            JConst.text->{
+                Text(
+                    j.viewValue,
+                )
             }
         }
     }
