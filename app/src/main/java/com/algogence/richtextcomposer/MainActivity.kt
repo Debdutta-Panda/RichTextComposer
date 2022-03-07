@@ -20,11 +20,16 @@ class MainActivity : ComponentActivity() {
         J("""
             {
                 "a":{
-                    "b":1
+                    "b":{
+                        "c":"d",
+                        "e":[
+                            1,2,3,4
+                        ]
+                    }
                 }
             }
         """.trimIndent()).apply {
-            Log.d("fdfdfsfsf",get("a").type.name)
+            Log.d("fdfdfsfsf", getByPath("a.b.e[1]")?.asArray()?.get(2)?.type?.name?:"")
         }
         setContent {
             RichTextComposerTheme {

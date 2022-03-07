@@ -21,6 +21,27 @@ class JArray(private val jsonArray: JSONArray?): JBase() {
     init {
         type = Type.ARRAY
     }
+    val children: List<J>
+    get(){
+        val count = jsonArray?.length()?:0
+        val ret = mutableListOf<J>()
+        for(i in 0 until count){
+            ret.add(J(jsonArray?.get(i)))
+        }
+        return ret
+    }
+
+    val lenght: Int
+    get(){
+        return jsonArray?.length()?:0
+    }
+
+    operator fun get(index: Int): J?{
+        if(index in 0 until lenght){
+            return J(jsonArray?.get(index))
+        }
+        return null
+    }
 }
 class J(private val src: Any? = null, private val forceObject: Boolean = true): JBase() {
     var value: Any? = null
@@ -82,11 +103,35 @@ class J(private val src: Any? = null, private val forceObject: Boolean = true): 
             null
         }
     }
-    operator fun get(key: String): J{
+    operator fun get(key: String): J?{
         if(json?.has(key)==true){
-            return J(json?.get(key)?:"",false)
+            val v = json?.get(key)
+            if(v!=null){
+                val j = J(v,false)
+                if(j.type!=Type.UNKNOWN){
+                    return j
+                }
+            }
         }
-        return J()
+        return null
+    }
+
+    fun getByPath(path: String): J? {
+        var j: J? = this
+        val chain = path.split(".").toMutableList()
+        while(j!=null&& j.type !=Type.UNKNOWN){
+            if(chain.isNotEmpty()){
+                j = j[chain.removeFirst()]
+            }
+            else{
+                break
+            }
+        }
+        return j
+    }
+
+    fun has(key: String): Boolean{
+        return json?.has(key)==true
     }
 
     fun asString(): String?{
@@ -143,5 +188,18 @@ class J(private val src: Any? = null, private val forceObject: Boolean = true): 
         } else{
             null
         }
+    }
+
+    fun forEachKey(block: (String)->Unit){
+        json?.keys()?.forEach(block)
+    }
+
+    val keys: List<String>
+    get(){
+        val k = mutableListOf<String>()
+        forEachKey {
+            k.add(it)
+        }
+        return k
     }
 }
