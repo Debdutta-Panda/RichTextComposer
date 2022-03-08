@@ -10,29 +10,147 @@ data class NumberPair(
     val comp1: Number,
     val comp2: Number
 )
+data class NumberTuple4(
+    val comp1: Number,
+    val comp2: Number,
+    val comp3: Number,
+    val comp4: Number
+)
 
 object JConst{
+    const val elevation = "elevation"
+    const val topStart = "topStart"
+    const val topEnd = "topEnd"
+    const val bottomEnd = "bottomEnd"
+    const val bottomStart = "bottomStart"
     const val empty = ""
+    const val backgroundColor = "backgroundColor"
+    const val contentColor = "contentColor"
     const val type = "type"
     const val surface = "surface"
     const val text = "text"
+    const val image = "image"
+    const val row = "row"
+    const val card = "card"
+    const val column = "column"
+    const val verticalArrangement = "verticalArrangement"
+    const val verticalAlignment = "verticalAlignment"
+    const val horizontalArrangement = "horizontalArrangement"
+    const val horizontalAlignment = "horizontalAlignment"
+    const val center = "center"
     const val value = "value"
     const val name = "name"
     const val children = "children"
     const val modifiers = "modifiers"
     const val width = "width"
+    const val columnScopeAlign = "columnScopeAlign"
+    const val rowScopeAlign = "rowScopeAlign"
+    const val columnScopeWeight = "columnScopeWeight"
+    const val rowScopeWeight = "rowScopeWeight"
     const val height = "height"
     const val background = "background"
     const val size = "size"
     const val widthHeight = "widthHeight"
+    const val requiredWidthHeight = "requiredWidthHeight"
     const val widthIn = "widthIn"
     const val heightIn = "heightIn"
+    const val sizeIn = "sizeIn"
     const val min = "min"
     const val max = "max"
+    const val minWidth = "minWidth"
+    const val maxWidth = "maxWidth"
+    const val minHeight = "minHeight"
+    const val maxHeight = "maxHeight"
+    const val requiredWidth = "requiredWidth"
+    const val requiredWidthIn = "requiredWidthIn"
+    const val requiredHeightIn = "requiredHeightIn"
+    const val requiredHeight = "requiredHeight"
+    const val requiredSize = "requiredSize"
+    const val requiredSizeIn = "requiredSizeIn"
+    const val fillMaxWidth = "fillMaxWidth"
+    const val fillMaxHeight = "fillMaxHeight"
+    const val fillMaxSize = "fillMaxSize"
+    const val wrapContentWidth = "wrapContentWidth"
+    const val wrapContentHeight = "wrapContentHeight"
+    const val wrapContentSize = "wrapContentSize"
+    const val defaultMinSize = "defaultMinSize"
+    const val padding = "padding"
+    const val paddingSymmetric = "paddingSymmetric"
+    const val horizontal = "horizontal"
+    const val vertical = "vertical"
+    const val start = "start"
+    const val end = "end"
+    const val spaceAround = "spaceAround"
+    const val spaceBetween = "spaceBetween"
+    const val spaceEvenly = "spaceEvenly"
+    const val left = "left"
+    const val top = "top"
+    const val right = "right"
+    const val bottom = "bottom"
+    const val paddingAll = "paddingAll"
+    const val paddingAbsolute = "paddingAbsolute"
+    const val offset = "offset"
+    const val absoluteOffset = "absoluteOffset"
+    const val x = "x"
+    const val y = "y"
+    const val url = "url"
+    const val shape = "shape"
+    const val contentScale = "contentScale"
+    const val crop = "crop"
+    const val fit = "fit"
+    const val fillHeight = "fillHeight"
+    const val fillWidth = "fillWidth"
+    const val inside = "inside"
+    const val fillBounds = "fillBounds"
+    const val roundedCornerShape = "roundedCornerShape"
+    const val circleShape = "circleShape"
+    const val roundedCornersShape = "roundedCornersShape"
 }
 val J.viewType: String
 get(){
     return get(JConst.type)?.asString()?:JConst.empty
+}
+val J.viewUrl: String
+get(){
+    return get(JConst.url)?.asString()?:JConst.empty
+}
+val J.viewBackgroundColor: Color
+get(){
+    return Color.parse(get(JConst.backgroundColor)?.asString()?:JConst.empty)
+}
+val J.viewContentColor: Color
+get(){
+    return Color.parse(get(JConst.contentColor)?.asString()?:JConst.empty)
+}
+val J.viewElevation: Number
+get(){
+    return get(JConst.elevation)?.asNumber()?:0
+}
+val J.viewShape: J?
+get(){
+    return get(JConst.shape)
+}
+///////////////////////////////////////////
+val J.viewHorizontalAlignment: String
+get(){
+    return get(JConst.horizontalAlignment)?.asString()?:JConst.empty
+}
+val J.viewVerticalArrangement: String
+get(){
+    return get(JConst.verticalArrangement)?.asString()?:JConst.empty
+}
+val J.viewVerticalAlignment: String
+get(){
+    return get(JConst.verticalAlignment)?.asString()?:JConst.empty
+}
+val J.viewHorizontalArrangement: String
+get(){
+    return get(JConst.horizontalArrangement)?.asString()?:JConst.empty
+}
+////////////////////////////////////////
+val J.viewContentScale: String
+get(){
+    return get(JConst.contentScale)?.asString()?:JConst.empty
 }
 val J.viewName: String
 get(){
@@ -45,6 +163,63 @@ get(){
     val c2 = value?.get(JConst.height)?.asNumber()?:0
     return NumberPair(c1,c2)
 }
+val J.viewValueXY: NumberPair
+get(){
+    val value = get(JConst.value)
+    val c1 = value?.get(JConst.x)?.asNumber()?:0
+    val c2 = value?.get(JConst.y)?.asNumber()?:0
+    return NumberPair(c1,c2)
+}
+val J.viewValueSymmetric: NumberPair
+get(){
+    val value = get(JConst.value)
+    val c1 = value?.get(JConst.horizontal)?.asNumber()?:0
+    val c2 = value?.get(JConst.vertical)?.asNumber()?:0
+    return NumberPair(c1,c2)
+}
+val J.viewValueMinWidthHeight: NumberPair
+get(){
+    val value = get(JConst.value)
+    val c1 = value?.get(JConst.minWidth)?.asNumber()?:0
+    val c2 = value?.get(JConst.minHeight)?.asNumber()?:0
+    return NumberPair(c1,c2)
+}
+val J.viewValueSizeLimit: NumberTuple4
+    get(){
+        val value = get(JConst.value)
+        val c1 = value?.get(JConst.minWidth)?.asNumber()?:0
+        val c2 = value?.get(JConst.minHeight)?.asNumber()?:0
+        val c3 = value?.get(JConst.maxWidth)?.asNumber()?:0
+        val c4 = value?.get(JConst.maxHeight)?.asNumber()?:0
+        return NumberTuple4(c1,c2,c3,c4)
+    }
+val J.viewValueCorners: NumberTuple4
+    get(){
+        val value = get(JConst.value)
+        val c1 = value?.get(JConst.topStart)?.asNumber()?:0
+        val c2 = value?.get(JConst.topEnd)?.asNumber()?:0
+        val c3 = value?.get(JConst.bottomEnd)?.asNumber()?:0
+        val c4 = value?.get(JConst.bottomStart)?.asNumber()?:0
+        return NumberTuple4(c1,c2,c3,c4)
+    }
+val J.viewValueSides: NumberTuple4
+    get(){
+        val value = get(JConst.value)
+        val c1 = value?.get(JConst.start)?.asNumber()?:0
+        val c2 = value?.get(JConst.top)?.asNumber()?:0
+        val c3 = value?.get(JConst.end)?.asNumber()?:0
+        val c4 = value?.get(JConst.bottom)?.asNumber()?:0
+        return NumberTuple4(c1,c2,c3,c4)
+    }
+val J.viewValueSidesAbsolute: NumberTuple4
+    get(){
+        val value = get(JConst.value)
+        val c1 = value?.get(JConst.left)?.asNumber()?:0
+        val c2 = value?.get(JConst.top)?.asNumber()?:0
+        val c3 = value?.get(JConst.right)?.asNumber()?:0
+        val c4 = value?.get(JConst.bottom)?.asNumber()?:0
+        return NumberTuple4(c1,c2,c3,c4)
+    }
 val J.viewValueMinMax: NumberPair
     get(){
         val value = get(JConst.value)
@@ -57,6 +232,10 @@ val J.viewValue: String
 get(){
     return get(JConst.value)?.asString()?:""
 }
+val J.viewValueJ: J?
+get(){
+    return get(JConst.value)
+}
 
 val J.viewModifiers: J?
 get(){
@@ -64,7 +243,7 @@ get(){
 }
 val J.viewValueNumber: Number
 get(){
-    val v = get("value")
+    val v = get(JConst.value)
     return when(v?.type){
         JBase.Type.FLOAT -> v.asFloat() ?:0f
         JBase.Type.INTEGER -> v.asInt() ?:0
@@ -87,7 +266,7 @@ fun J.forEachChildView(block: @Composable (J)->Unit){
 }
 
 @Composable
-fun J.forEachModifier(block: (J)-> Modifier): Modifier{
+fun J.forEachModifier(block: (J)-> Modifier?): Modifier{
     val children = this[JConst.modifiers]?.asArray()?.children
     val count = children?.size?:0
     var e = Modifier
@@ -96,7 +275,9 @@ fun J.forEachModifier(block: (J)-> Modifier): Modifier{
         val child = children?.get(i)
         if(child!=null){
             val m = block(child)
-            r = r.then(m)
+            if(m!=null){
+                r = r.then(m)
+            }
         }
     }
     return r
@@ -108,4 +289,8 @@ get(){
 }
 
 fun Color.Companion.parse(colorString: String): Color =
-    Color(color = android.graphics.Color.parseColor(colorString))
+    try {
+        Color(color = android.graphics.Color.parseColor(colorString))
+    } catch (e: Exception) {
+        White
+    }
