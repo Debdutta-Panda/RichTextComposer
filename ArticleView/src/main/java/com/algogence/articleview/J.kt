@@ -151,6 +151,16 @@ class J(private val src: Any? = null, private val forceObject: Boolean = true): 
         }
     }
 
+    fun asNumber(): Number?{
+        return when(type){
+            Type.FLOAT -> value as? Float
+            Type.INTEGER -> value as? Int
+            Type.LONG -> value as? Long
+            Type.DOUBLE -> value as? Double
+            else->0f
+        }
+    }
+
     fun asInt(): Int?{
         return if(type==Type.INTEGER){
             value as? Int
