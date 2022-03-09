@@ -1,17 +1,23 @@
 package com.algogence.articleview
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -71,14 +77,89 @@ fun renderView(
                 shape = getCardShape(j),
                 backgroundColor = j.viewBackgroundColor,
                 contentColor = j.viewContentColor,
-                elevation = j.viewElevation.dp
+                elevation = j.viewElevation.dp,
+                border = getBorderStroke(j)
             ){
                 j.forEachChildView {
                     renderView(it)
                 }
             }
         }
+        JConst.box->{
+            Box(
+                modifier = composeModifier(j, scope),
+                contentAlignment = getContentAlignment(j)
+            ){
+                j.forEachChildView {
+                    renderView(it,this)
+                }
+            }
+        }
+        JConst.icon->{
+            Icon(
+                imageVector = getIcon(j),
+                contentDescription = "Icon",
+                modifier = composeModifier(j, scope),
+                tint = getTint(j)
+            )
+        }
     }
+}
+
+fun getTint(j: J): Color {
+    return Color.parse(j[JConst.tint]?.asString()?:"")
+}
+
+fun getIcon(j: J): ImageVector {
+    val type = j[JConst.type]?.asString()?:""
+    val name = j[JConst.name]?.asString()?:""
+    return when(type){
+        JConst.outlined->getOutlinedIcon(name)
+        JConst.rounded->getRoundedIcon(name)
+        JConst.sharp->getSharpIcon(name)
+        else->getFilledIcon(name)
+    }
+}
+
+fun getSharpIcon(name: String): ImageVector {
+
+}
+
+fun getRoundedIcon(name: String): ImageVector {
+
+}
+
+fun getOutlinedIcon(name: String): ImageVector {
+
+}
+
+
+
+fun getContentAlignment(j: J): Alignment {
+    val contentAlignment = j[JConst.contentAlignment]?.asString()
+    return when(contentAlignment){
+        JConst.topstart->Alignment.TopStart
+        JConst.topcenter->Alignment.TopCenter
+        JConst.topend->Alignment.TopEnd
+        JConst.centerstart->Alignment.CenterStart
+        JConst.center->Alignment.Center
+        JConst.centerend->Alignment.CenterEnd
+        JConst.bottomstart->Alignment.BottomStart
+        JConst.bottomcenter->Alignment.BottomCenter
+        JConst.bottomend->Alignment.BottomEnd
+        else->Alignment.TopStart
+    }
+}
+
+fun getBorderStroke(j: J): BorderStroke? {
+    val border = j[JConst.border]
+    if(border!=null){
+        val color = border[JConst.color]?.asString()?:"#ffffff"
+        val col = Color.parse(color)
+        val strokeWidth = border[JConst.stroke]?.asNumber()?:0
+        return BorderStroke(strokeWidth.dp,col)
+    }
+    return BorderStroke(0.dp,Color.Transparent)
 }
 
 
@@ -167,6 +248,7 @@ fun getContentScale(viewContentScale: String): ContentScale {
 
 typealias ColumnScopeBlock = ColumnScope.() ->Modifier?
 typealias RowScopeBlock = RowScope.() ->Modifier?
+typealias BoxScopeBlock = BoxScope.() ->Modifier?
 
 fun ColumnScopeModifier(scope: Any?,block: ColumnScopeBlock): Modifier?{
     if(scope is ColumnScope){
@@ -176,6 +258,12 @@ fun ColumnScopeModifier(scope: Any?,block: ColumnScopeBlock): Modifier?{
 }
 fun RowScopeModifier(scope: Any?,block: RowScopeBlock): Modifier?{
     if(scope is RowScope){
+        return block(scope)
+    }
+    return null
+}
+fun BoxScopeModifier(scope: Any?,block: BoxScopeBlock): Modifier?{
+    if(scope is BoxScope){
         return block(scope)
     }
     return null
@@ -191,6 +279,11 @@ fun composeModifier(j: J?, scope: Any?): Modifier {
             JConst.columnScopeAlign->{
                 ColumnScopeModifier(scope){
                     Modifier.align(getHorizontalAlignment(it.viewValue))
+                }
+            }
+            JConst.boxScopeAlign->{
+                BoxScopeModifier(scope){
+                    Modifier.align(get2dAlignment(it.viewValue))
                 }
             }
             JConst.rowScopeAlign->{
@@ -350,5 +443,20 @@ fun composeModifier(j: J?, scope: Any?): Modifier {
             }
             else -> Modifier
         }
+    }
+}
+
+fun get2dAlignment(viewValue: String): Alignment {
+    return when(viewValue){
+        JConst.topstart->Alignment.TopStart
+        JConst.topcenter->Alignment.TopCenter
+        JConst.topend->Alignment.TopEnd
+        JConst.centerstart->Alignment.CenterStart
+        JConst.center->Alignment.Center
+        JConst.centerend->Alignment.CenterEnd
+        JConst.bottomstart->Alignment.BottomStart
+        JConst.bottomcenter->Alignment.BottomCenter
+        JConst.bottomend->Alignment.BottomEnd
+        else->Alignment.TopStart
     }
 }

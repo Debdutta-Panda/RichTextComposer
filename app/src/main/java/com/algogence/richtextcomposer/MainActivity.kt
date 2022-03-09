@@ -30,6 +30,10 @@ class MainActivity : ComponentActivity() {
                                     "name":"roundedCornerShape",
                                     "value":12
                                 },
+                                "border":{
+                                    "stroke":0.5,
+                                    "color":"#efefef"
+                                },
                                 "backgroundColor":"#ffffff",
                                 "elevation":20
                             },

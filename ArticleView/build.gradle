@@ -51,4 +51,5 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "com.github.skydoves:landscapist-glide:1.4.9"
+    implementation "androidx.compose.material:material-icons-extended:$compose_version"
 }
