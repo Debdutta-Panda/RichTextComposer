@@ -10,7 +10,10 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.materialIcon
+import androidx.compose.material.icons.materialPath
 import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,7 +21,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.PathBuilder
+import androidx.compose.ui.graphics.vector.PathNode
+import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
+import com.google.accompanist.flowlayout.FlowRow
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -39,7 +53,18 @@ fun renderView(
         JConst.text->{
             Text(
                 j.viewValue,
-                modifier = composeModifier(j, scope)
+                modifier = composeModifier(j, scope),
+                color = getColor(j),
+                fontSize = getFontSize(j),
+                fontStyle = getFontStyle(j),
+                fontWeight = getFontWeight(j),
+                letterSpacing = getLetterSpacing(j),
+                textDecoration = getTextDecoraton(j),
+                textAlign = getTextAlign(j),
+                lineHeight = getLineHeight(j),
+                overflow = getTextOverflow(j),
+                softWrap = getSoftWrap(j),
+                maxLines = getMaxLinesCount(j)
             )
         }
         JConst.image->{
@@ -103,7 +128,105 @@ fun renderView(
                 tint = getTint(j)
             )
         }
+        JConst.flowRow->{
+            FlowRow(){
+
+            }
+        }
     }
+}
+
+fun getMaxLinesCount(j: J): Int {
+    return j[JConst.maxLines]?.asInt()?:Int.MAX_VALUE
+}
+
+fun getSoftWrap(j: J): Boolean {
+    return j[JConst.softWrap]?.asBoolean()?:true
+}
+
+fun getTextOverflow(j: J): TextOverflow {
+    return when(j[JConst.textOverflow]?.asString()){
+        JConst.ellipsis->TextOverflow.Ellipsis
+        JConst.visible->TextOverflow.Visible
+        else->TextOverflow.Clip
+    }
+}
+
+fun getLineHeight(j: J): TextUnit {
+    val value = j[JConst.lineHeight]?.asNumber(-1)?:-1
+    return if(value==-1){
+        TextUnit.Unspecified
+    }
+    else{
+        value.toFloat().sp
+    }
+}
+
+fun getTextAlign(j: J): TextAlign? {
+    val value = j[JConst.textAlign]?.asString()?:""
+    return when(value){
+        JConst.left->TextAlign.Left
+        JConst.right->TextAlign.Right
+        JConst.center->TextAlign.Center
+        JConst.justify->TextAlign.Justify
+        JConst.start->TextAlign.Start
+        JConst.end->TextAlign.End
+        else->null
+    }
+}
+
+fun getTextDecoraton(j: J): TextDecoration? {
+    val value = j[JConst.textDecoration]?.asInt()?:0
+    val list = mutableListOf<TextDecoration>()
+    if(1 or value == 1){
+        list.add(TextDecoration.Underline)
+    }
+    if(1 or value == 2){
+        list.add(TextDecoration.LineThrough)
+    }
+    return TextDecoration.combine(list)
+}
+
+fun getLetterSpacing(j: J): TextUnit {
+    val value = j[JConst.letterSpacing]?.asNumber(-1)
+    return if(value==-1){
+        TextUnit.Unspecified
+    }
+    else{
+        (value?.toFloat()?:0f).sp
+    }
+}
+
+fun getFontWeight(j: J): FontWeight? {
+    val value = (j[JConst.fontWeight]?.asNumber(-1)?:-1).toInt()
+    if(value in 0..1000){
+        return FontWeight(value)
+    }
+    else{
+        return null
+    }
+}
+
+fun getFontStyle(j: J): FontStyle? {
+    return when(j[JConst.fontStyle]?.asString()){
+        JConst.italic->FontStyle.Italic
+        JConst.normal->FontStyle.Normal
+        else->null
+    }
+}
+
+fun getFontSize(j: J): TextUnit {
+    val value = j[JConst.fontSize]?.asNumber(-1)
+    return if(value==-1){
+        TextUnit.Unspecified
+    }
+    else{
+        (value?.toFloat()?:0f).sp
+    }
+}
+
+fun getColor(j: J): Color {
+    return Color.parse(j[JConst.color]?.asString()?:"")
 }
 
 fun getTint(j: J): Color {
@@ -111,26 +234,130 @@ fun getTint(j: J): Color {
 }
 
 fun getIcon(j: J): ImageVector {
-    val type = j[JConst.type]?.asString()?:""
-    val name = j[JConst.name]?.asString()?:""
-    return when(type){
-        JConst.outlined->getOutlinedIcon(name)
-        JConst.rounded->getRoundedIcon(name)
-        JConst.sharp->getSharpIcon(name)
-        else->getFilledIcon(name)
+    val pathData = j[JConst.icon]?.asString()?:""
+    val b = PathParser().parsePathString(pathData).toNodes()
+    return materialIcon("parsed_icon"){
+        materialPath{
+            b.forEach {
+                when(it){
+                    is PathNode.RelativeMoveTo->{
+                        moveToRelative(it.dx, it.dy)
+                    }
+                    is PathNode.MoveTo->{
+                        moveTo(it.x, it.y)
+                    }
+                    is PathNode.RelativeLineTo->{
+                        lineToRelative(it.dx, it.dy)
+                    }
+                    is PathNode.LineTo->{
+                        lineTo(it.x,it.y)
+                    }
+                    is PathNode.RelativeHorizontalTo->{
+                        horizontalLineToRelative(it.dx)
+                    }
+                    is PathNode.HorizontalTo->{
+                        horizontalLineTo(it.x)
+                    }
+                    is PathNode.RelativeVerticalTo->{
+                        verticalLineToRelative(it.dy)
+                    }
+                    is PathNode.VerticalTo->{
+                        verticalLineTo(it.y)
+                    }
+                    is PathNode.RelativeCurveTo->{
+                        curveToRelative(
+                            it.dx1,
+                            it.dy1,
+                            it.dx2,
+                            it.dy2,
+                            it.dx3,
+                            it.dy3,
+                        )
+                    }
+                    is PathNode.CurveTo->{
+                        curveTo(
+                            it.x1,
+                            it.y1,
+                            it.x2,
+                            it.y2,
+                            it.x3,
+                            it.y3,
+                        )
+                    }
+                    is PathNode.RelativeReflectiveCurveTo->{
+                        reflectiveCurveToRelative(
+                            it.dx1,
+                            it.dy1,
+                            it.dx2,
+                            it.dy2,
+                        )
+                    }
+                    is PathNode.ReflectiveCurveTo->{
+                        reflectiveCurveTo(
+                            it.x1,
+                            it.y1,
+                            it.x2,
+                            it.y2,
+                        )
+                    }
+                    is PathNode.RelativeQuadTo->{
+                        quadToRelative(
+                            it.dx1,
+                            it.dy1,
+                            it.dx2,
+                            it.dy2,
+                        )
+                    }
+                    is PathNode.QuadTo->{
+                        quadTo(
+                            it.x1,
+                            it.y1,
+                            it.x2,
+                            it.y2,
+                        )
+                    }
+                    is PathNode.RelativeReflectiveQuadTo->{
+                        reflectiveQuadToRelative(
+                            it.dx,
+                            it.dy
+                        )
+                    }
+                    is PathNode.ReflectiveQuadTo->{
+                        reflectiveQuadTo(
+                            it.x,
+                            it.y
+                        )
+                    }
+                    is PathNode.RelativeArcTo->{
+                        arcToRelative(
+                            it.horizontalEllipseRadius,
+                            it.verticalEllipseRadius,
+                            it.theta,
+                            it.isMoreThanHalf,
+                            it.isPositiveArc,
+                            it.arcStartDx,
+                            it.arcStartDy
+                        )
+                    }
+                    is PathNode.ArcTo->{
+                        arcTo(
+                            it.horizontalEllipseRadius,
+                            it.verticalEllipseRadius,
+                            it.theta,
+                            it.isMoreThanHalf,
+                            it.isPositiveArc,
+                            it.arcStartX,
+                            it.arcStartY,
+                        )
+                    }
+                    is PathNode.Close->{
+                        close()
+                    }
+                    //else->nothing
+                }
+            }
+        }
     }
-}
-
-fun getSharpIcon(name: String): ImageVector {
-
-}
-
-fun getRoundedIcon(name: String): ImageVector {
-
-}
-
-fun getOutlinedIcon(name: String): ImageVector {
-
 }
 
 
