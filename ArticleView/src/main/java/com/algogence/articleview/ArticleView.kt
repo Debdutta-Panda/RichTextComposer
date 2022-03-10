@@ -2,7 +2,6 @@ package com.algogence.articleview
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -57,22 +56,24 @@ fun renderView(
                 renderView(it)
             }
         }
-        JConst.text-> Text(
-            j.viewValue,
-            modifier = composeModifier(j, scope),
-            color = getColor(j),
-            fontSize = getFontSize(j),
-            fontStyle = getFontStyle(j),
-            fontWeight = getFontWeight(j),
-            letterSpacing = getLetterSpacing(j),
-            textDecoration = getTextDecoraton(j),
-            textAlign = getTextAlign(j),
-            lineHeight = getLineHeight(j),
-            overflow = getTextOverflow(j),
-            softWrap = getSoftWrap(j),
-            maxLines = getMaxLinesCount(j),
-            fontFamily = getFontFamily(j)
-        )
+        JConst.text-> {
+            Text(
+                j.viewValue,
+                modifier = composeModifier(j, scope),
+                color = getColor(j),
+                fontSize = getFontSize(j),
+                fontStyle = getFontStyle(j),
+                fontWeight = getFontWeight(j),
+                letterSpacing = getLetterSpacing(j),
+                textDecoration = getTextDecoration(j),
+                textAlign = getTextAlign(j),
+                lineHeight = getLineHeight(j),
+                overflow = getTextOverflow(j),
+                softWrap = getSoftWrap(j),
+                maxLines = getMaxLinesCount(j),
+                fontFamily = getFontFamily(j)
+            )
+        }
         JConst.image-> GlideImage(
             imageModel = j.viewUrl,
             contentScale = getContentScale(j.viewContentScale),
@@ -254,7 +255,7 @@ fun getSpanStyle(j: J): SpanStyle {
         fontFamily = getFontFamily(j),
         letterSpacing = getLetterSpacing(j),
         background = getBackground(j),
-        textDecoration = getTextDecoraton(j),
+        textDecoration = getTextDecoration(j),
         shadow = getShadow(j),
     )
 }
@@ -342,10 +343,10 @@ fun getMainAxisAlignment(j: J): FlowMainAxisAlignment {
     }
 }
 
-fun getMainAxisSize(j: J): SizeMode {
+fun getMainAxisSize(j: J): com.google.accompanist.flowlayout.SizeMode {
     return when(j[JConst.mainAxisSize]?.asString()?:""){
-        JConst.expand->SizeMode.Expand
-        else->SizeMode.Wrap
+        JConst.expand->com.google.accompanist.flowlayout.SizeMode.Expand
+        else->com.google.accompanist.flowlayout.SizeMode.Wrap
     }
 }
 
@@ -388,13 +389,13 @@ fun getTextAlign(j: J): TextAlign? {
     }
 }
 
-fun getTextDecoraton(j: J): TextDecoration? {
+fun getTextDecoration(j: J): TextDecoration {
     val value = j[JConst.textDecoration]?.asInt()?:0
     val list = mutableListOf<TextDecoration>()
-    if(1 or value == 1){
+    if(1 and value == 1){
         list.add(TextDecoration.Underline)
     }
-    if(1 or value == 2){
+    if(2 and value == 2){
         list.add(TextDecoration.LineThrough)
     }
     return TextDecoration.combine(list)
@@ -429,12 +430,15 @@ fun getFontStyle(j: J): FontStyle? {
 }
 
 fun getFontSize(j: J): TextUnit {
-    val value = j[JConst.fontSize]?.asNumber(-1)
+    var value = j[JConst.fontSize]?.asNumber(-1)
+    if(value==null){
+        value = -1
+    }
     return if(value==-1){
         TextUnit.Unspecified
     }
     else{
-        (value?.toFloat()?:0f).sp
+        value.toFloat().sp
     }
 }
 
