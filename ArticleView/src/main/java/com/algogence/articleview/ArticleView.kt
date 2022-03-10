@@ -1,5 +1,9 @@
 package com.algogence.articleview
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.view.ViewGroup
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -11,12 +15,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -28,6 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -40,6 +45,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import com.algogence.articleview.youtubevideoviewlibrary.YoutubeView
 import com.google.accompanist.flowlayout.*
 import com.skydoves.landscapist.glide.GlideImage
 
@@ -49,6 +56,29 @@ fun renderView(
     scope: Any? = null
 ) {
     when(j.viewType){
+        JConst.youtube->{
+            Box(
+                modifier = composeModifier(j,scope),
+                contentAlignment = Alignment.Center
+            ){
+                GlideImage(
+                    imageModel = j[JConst.thumbnail]?.asString(),
+                    contentScale = ContentScale.Crop,
+                    modifier = composeModifier(j,scope)
+                )
+                val context = LocalContext.current
+                IconButton(
+                    onClick = { onPlayClick(context,j.viewUrl) },
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.PlayArrow,
+                        tint = Color.Red,
+                        contentDescription = "Play",
+                        modifier = Modifier.size(64.dp)
+                    )
+                }
+            }
+        }
         JConst.surface-> Surface(
             modifier = composeModifier(j,scope)
         ){
@@ -210,6 +240,18 @@ fun renderView(
             }
         }
     }
+}
+
+fun onPlayClick(context: Context, viewUrl: String) {
+
+    val intent = Intent()
+    intent.setClassName(
+        context,
+        "com.algogence.articleview.youtubevideoviewlibrary.VideoActivity"
+    ).apply {
+        putExtra("url", viewUrl)
+    }
+    context.startActivity(intent)
 }
 
 fun isUserScrollEnabled(j: J): Boolean {

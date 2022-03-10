@@ -3,6 +3,8 @@ package com.algogence.articleview
 import org.json.JSONArray
 import org.json.JSONObject
 
+
+
 open class JBase{
     enum class Type{
         UNKNOWN,
@@ -31,13 +33,13 @@ class JArray(private val jsonArray: JSONArray?): JBase() {
         return ret
     }
 
-    val lenght: Int
+    val length: Int
     get(){
         return jsonArray?.length()?:0
     }
 
     operator fun get(index: Int): J?{
-        if(index in 0 until lenght){
+        if(index in 0 until length){
             return J(jsonArray?.get(index))
         }
         return null

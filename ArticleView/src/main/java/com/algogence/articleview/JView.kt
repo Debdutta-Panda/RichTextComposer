@@ -18,6 +18,8 @@ data class NumberTuple4(
 )
 
 object JConst{
+    const val thumbnail = "thumbnail"
+    const val youtube = "youtube"
     const val lazyColumn = "lazyColumn"
     const val lazyItemScopeFillParentMaxHeight = "lazyItemScopeFillParentMaxHeight"
     const val lazyItemScopeFillParentMaxWidth = "lazyItemScopeFillParentMaxWidth"
