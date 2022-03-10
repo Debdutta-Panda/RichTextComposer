@@ -2,37 +2,46 @@ package com.algogence.articleview
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.DisableSelection
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
-import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.graphics.vector.PathBuilder
 import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
-import com.google.accompanist.flowlayout.FlowRow
+import com.google.accompanist.flowlayout.*
 import com.skydoves.landscapist.glide.GlideImage
 
 @Composable
@@ -41,98 +50,302 @@ fun renderView(
     scope: Any? = null
 ) {
     when(j.viewType){
-        JConst.surface->{
-            Surface(
-                modifier = composeModifier(j,scope)
+        JConst.surface-> Surface(
+            modifier = composeModifier(j,scope)
+        ){
+            j.forEachChildView {
+                renderView(it)
+            }
+        }
+        JConst.text-> Text(
+            j.viewValue,
+            modifier = composeModifier(j, scope),
+            color = getColor(j),
+            fontSize = getFontSize(j),
+            fontStyle = getFontStyle(j),
+            fontWeight = getFontWeight(j),
+            letterSpacing = getLetterSpacing(j),
+            textDecoration = getTextDecoraton(j),
+            textAlign = getTextAlign(j),
+            lineHeight = getLineHeight(j),
+            overflow = getTextOverflow(j),
+            softWrap = getSoftWrap(j),
+            maxLines = getMaxLinesCount(j),
+            fontFamily = getFontFamily(j)
+        )
+        JConst.image-> GlideImage(
+            imageModel = j.viewUrl,
+            contentScale = getContentScale(j.viewContentScale),
+            modifier = composeModifier(j, scope)
+        )
+        JConst.column-> Column(
+            modifier = composeModifier(j, scope),
+            verticalArrangement = getVerticalArrangement(j),
+            horizontalAlignment = getHorizontalAlignment(j)
+        ) {
+            j.forEachChildView {
+                renderView(it,this)
+            }
+        }
+        JConst.row-> Row(
+            modifier = composeModifier(j, scope),
+            horizontalArrangement = getHorizontalArrangement(j),
+            verticalAlignment = getVerticalAlignment(j)
+        ) {
+            j.forEachChildView {
+                renderView(it,this)
+            }
+        }
+        JConst.card-> Card(
+            modifier = composeModifier(j, scope),
+            shape = getCardShape(j),
+            backgroundColor = j.viewBackgroundColor,
+            contentColor = j.viewContentColor,
+            elevation = j.viewElevation.dp,
+            border = getBorderStroke(j)
+        ){
+            j.forEachChildView {
+                renderView(it)
+            }
+        }
+        JConst.box-> Box(
+            modifier = composeModifier(j, scope),
+            contentAlignment = getContentAlignment(j)
+        ){
+            j.forEachChildView {
+                renderView(it,this)
+            }
+        }
+        JConst.icon-> Icon(
+            imageVector = getIcon(j),
+            contentDescription = "Icon",
+            modifier = composeModifier(j, scope),
+            tint = getTint(j)
+        )
+        JConst.flowRow-> {
+            val mainAxisAlignment = getMainAxisAlignment(j)
+            FlowRow(
+                modifier = composeModifier(j, scope),
+                mainAxisSize = getMainAxisSize(j),
+                mainAxisAlignment = mainAxisAlignment,
+                mainAxisSpacing = getMainAxisSpacing(j),
+                crossAxisAlignment = getCrossAxisAlignment(j),
+                crossAxisSpacing = getCrossAxisSpacing(j),
+                lastLineMainAxisAlignment = getLastLineMainAxisAlignment(j,mainAxisAlignment)
             ){
                 j.forEachChildView {
                     renderView(it)
                 }
             }
         }
-        JConst.text->{
+        JConst.flowColumn-> {
+            val mainAxisAlignment = getMainAxisAlignment(j)
+            FlowColumn(
+                modifier = composeModifier(j, scope),
+                mainAxisSize = getMainAxisSize(j),
+                mainAxisAlignment = mainAxisAlignment,
+                mainAxisSpacing = getMainAxisSpacing(j),
+                crossAxisAlignment = getCrossAxisAlignment(j),
+                crossAxisSpacing = getCrossAxisSpacing(j),
+                lastLineMainAxisAlignment = getLastLineMainAxisAlignment(j,mainAxisAlignment)
+            ){
+                j.forEachChildView {
+                    renderView(it)
+                }
+            }
+        }
+        JConst.richText-> {
             Text(
-                j.viewValue,
+                buildAnnotatedString {
+                    j.forEachChildView {
+                        withStyle(style = getSpanStyle(it)) {
+                            append(j.viewValue)
+                        }
+                    }
+                },
                 modifier = composeModifier(j, scope),
-                color = getColor(j),
-                fontSize = getFontSize(j),
-                fontStyle = getFontStyle(j),
-                fontWeight = getFontWeight(j),
-                letterSpacing = getLetterSpacing(j),
-                textDecoration = getTextDecoraton(j),
-                textAlign = getTextAlign(j),
-                lineHeight = getLineHeight(j),
-                overflow = getTextOverflow(j),
-                softWrap = getSoftWrap(j),
-                maxLines = getMaxLinesCount(j)
             )
         }
-        JConst.image->{
-            GlideImage(
-                imageModel = j.viewUrl,
-                contentScale = getContentScale(j.viewContentScale),
-                modifier = composeModifier(j, scope)
-            )
-        }
-        JConst.column->{
-            Column(
-                modifier = composeModifier(j, scope),
-                verticalArrangement = getVerticalArrangement(j),
-                horizontalAlignment = getHorizontalAlignment(j)
-            ) {
-                j.forEachChildView {
-                    renderView(it,this)
-                }
-            }
-        }
-        JConst.row->{
-            Row(
-                modifier = composeModifier(j, scope),
-                horizontalArrangement = getHorizontalArrangement(j),
-                verticalAlignment = getVerticalAlignment(j)
-            ) {
-                j.forEachChildView {
-                    renderView(it,this)
-                }
-            }
-        }
-        JConst.card->{
-            Card(
-                modifier = composeModifier(j, scope),
-                shape = getCardShape(j),
-                backgroundColor = j.viewBackgroundColor,
-                contentColor = j.viewContentColor,
-                elevation = j.viewElevation.dp,
-                border = getBorderStroke(j)
-            ){
+        JConst.selectionContainer-> {
+            SelectionContainer(modifier = composeModifier(j, scope),) {
                 j.forEachChildView {
                     renderView(it)
                 }
             }
         }
-        JConst.box->{
-            Box(
-                modifier = composeModifier(j, scope),
-                contentAlignment = getContentAlignment(j)
-            ){
+        JConst.disableSelection-> {
+            DisableSelection {
                 j.forEachChildView {
+                    renderView(it)
+                }
+            }
+        }
+        JConst.lazyRow-> {
+            LazyRow(
+                modifier = composeModifier(j, scope),
+                contentPadding = getPaddingValues(j),
+                reverseLayout = isReverseLayout(j),
+                horizontalArrangement = getHorizontalArrangement(j),
+                verticalAlignment = getVerticalAlignment(j),
+                userScrollEnabled = isUserScrollEnabled(j)
+            ){
+                items(j.children){
                     renderView(it,this)
                 }
             }
         }
-        JConst.icon->{
-            Icon(
-                imageVector = getIcon(j),
-                contentDescription = "Icon",
+        JConst.lazyColumn-> {
+            LazyColumn(
                 modifier = composeModifier(j, scope),
-                tint = getTint(j)
-            )
-        }
-        JConst.flowRow->{
-            FlowRow(){
-
+                contentPadding = getPaddingValues(j),
+                reverseLayout = isReverseLayout(j),
+                verticalArrangement = getVerticalArrangement(j),
+                horizontalAlignment = getHorizontalAlignment(j),
+                userScrollEnabled = isUserScrollEnabled(j)
+            ){
+                items(j.children){
+                    renderView(it,this)
+                }
             }
         }
+    }
+}
+
+fun isUserScrollEnabled(j: J): Boolean {
+    return j[JConst.userScrollEnabled]?.asBoolean()?:false
+}
+
+fun isReverseLayout(j: J): Boolean {
+    return j[JConst.reverseLayout]?.asBoolean()?:false
+}
+
+fun getPaddingValues(j: J): PaddingValues {
+    val jj = j[JConst.padding] ?: return PaddingValues()
+    return PaddingValues(
+        start = getStart(jj),
+        top = getTop(jj),
+        end = getEnd(jj),
+        bottom = getBottom(jj),
+    )
+}
+
+fun getStart(jj: J): Dp {
+    return (jj[JConst.start]?.asNumber()?:0).dp
+}
+
+fun getTop(jj: J): Dp {
+    return (jj[JConst.top]?.asNumber()?:0).dp
+}
+
+fun getEnd(jj: J): Dp {
+    return (jj[JConst.end]?.asNumber()?:0).dp
+}
+
+fun getBottom(jj: J): Dp {
+    return (jj[JConst.bottom]?.asNumber()?:0).dp
+}
+
+fun getSpanStyle(j: J): SpanStyle {
+    return SpanStyle(
+        color = getColor(j),
+        fontSize = getFontSize(j),
+        fontWeight = getFontWeight(j),
+        fontStyle = getFontStyle(j),
+        fontFamily = getFontFamily(j),
+        letterSpacing = getLetterSpacing(j),
+        background = getBackground(j),
+        textDecoration = getTextDecoraton(j),
+        shadow = getShadow(j),
+    )
+}
+
+fun getShadow(j: J): Shadow? {
+    val jj = j[JConst.shadow] ?: return null
+    return Shadow(
+        color = getColor(jj),
+        offset = getOffset(jj),
+        blurRadius = getBlurRadius(jj)
+    )
+}
+
+fun getBlurRadius(jj: J): Float {
+    return jj[JConst.blurRadius]?.asNumber()?.toFloat()?:0f
+}
+
+fun getOffset(jj: J): Offset {
+    val j = jj[JConst.offset]?:return Offset.Unspecified
+    return Offset(
+        x = getX(j),
+        y = getY(j),
+    )
+}
+
+fun getX(j: J): Float {
+    return j[JConst.x]?.asNumber()?.toFloat()?:0f
+}
+
+fun getY(j: J): Float {
+    return j[JConst.y]?.asNumber()?.toFloat()?:0f
+}
+
+fun getBackground(j: J): Color {
+    return Color.parse(j[JConst.background]?.asString()?:"")
+}
+
+fun getFontFamily(j: J): FontFamily? {
+    return when(j[JConst.fontFamily]?.asString()){
+        JConst.default-> FontFamily.Default
+        JConst.sansSerif-> FontFamily.SansSerif
+        JConst.serif-> FontFamily.Serif
+        JConst.monospace-> FontFamily.Monospace
+        JConst.cursive-> FontFamily.Cursive
+        else->null
+    }
+}
+
+fun getLastLineMainAxisAlignment(j: J, default: FlowMainAxisAlignment): FlowMainAxisAlignment {
+    return when(j[JConst.lastLineMainAxisAlignment]?.asString()?:""){
+        JConst.center->MainAxisAlignment.Center
+        JConst.end->MainAxisAlignment.End
+        JConst.spaceEvenly->MainAxisAlignment.SpaceEvenly
+        JConst.spaceBetween->MainAxisAlignment.SpaceBetween
+        JConst.spaceAround->MainAxisAlignment.SpaceAround
+        JConst.start->MainAxisAlignment.Start
+        else->default
+    }
+}
+
+fun getCrossAxisSpacing(j: J): Dp {
+    return (j[JConst.crossAxisSpacing]?.asNumber()?:0).dp
+}
+
+fun getCrossAxisAlignment(j: J): FlowCrossAxisAlignment {
+    return when(j[JConst.crossAxisAlignment]?.asString()?:""){
+        JConst.center->FlowCrossAxisAlignment.Center
+        JConst.end->FlowCrossAxisAlignment.End
+        else->FlowCrossAxisAlignment.Start
+    }
+}
+
+fun getMainAxisSpacing(j: J): Dp {
+    return (j[JConst.mainAxisSpacing]?.asNumber()?:0).dp
+}
+
+fun getMainAxisAlignment(j: J): FlowMainAxisAlignment {
+    return when(j[JConst.mainAxisAlignment]?.asString()?:""){
+        JConst.center->MainAxisAlignment.Center
+        JConst.end->MainAxisAlignment.End
+        JConst.spaceEvenly->MainAxisAlignment.SpaceEvenly
+        JConst.spaceBetween->MainAxisAlignment.SpaceBetween
+        JConst.spaceAround->MainAxisAlignment.SpaceAround
+        else->MainAxisAlignment.Start
+    }
+}
+
+fun getMainAxisSize(j: J): SizeMode {
+    return when(j[JConst.mainAxisSize]?.asString()?:""){
+        JConst.expand->SizeMode.Expand
+        else->SizeMode.Wrap
     }
 }
 
@@ -476,9 +689,16 @@ fun getContentScale(viewContentScale: String): ContentScale {
 typealias ColumnScopeBlock = ColumnScope.() ->Modifier?
 typealias RowScopeBlock = RowScope.() ->Modifier?
 typealias BoxScopeBlock = BoxScope.() ->Modifier?
+typealias LazyItemScopeBlock = LazyItemScope.() ->Modifier?
 
 fun ColumnScopeModifier(scope: Any?,block: ColumnScopeBlock): Modifier?{
     if(scope is ColumnScope){
+        return block(scope)
+    }
+    return null
+}
+fun LazyItemScopeModifier(scope: Any?,block: LazyItemScopeBlock): Modifier?{
+    if(scope is LazyItemScope){
         return block(scope)
     }
     return null
@@ -503,6 +723,21 @@ fun composeModifier(j: J?, scope: Any?): Modifier {
     }
     return j.forEachModifier{
         when(it.viewName){
+            JConst.lazyItemScopeFillParentMaxSize->{
+                LazyItemScopeModifier(scope){
+                    Modifier.fillParentMaxSize(getFraction(j))
+                }
+            }
+            JConst.lazyItemScopeFillParentMaxWidth->{
+                LazyItemScopeModifier(scope){
+                    Modifier.fillParentMaxWidth(getFraction(j))
+                }
+            }
+            JConst.lazyItemScopeFillParentMaxHeight->{
+                LazyItemScopeModifier(scope){
+                    Modifier.fillParentMaxHeight(getFraction(j))
+                }
+            }
             JConst.columnScopeAlign->{
                 ColumnScopeModifier(scope){
                     Modifier.align(getHorizontalAlignment(it.viewValue))
@@ -671,6 +906,10 @@ fun composeModifier(j: J?, scope: Any?): Modifier {
             else -> Modifier
         }
     }
+}
+
+fun getFraction(j: J): Float {
+    return j[JConst.fraction]?.asFloat()?:1f
 }
 
 fun get2dAlignment(viewValue: String): Alignment {

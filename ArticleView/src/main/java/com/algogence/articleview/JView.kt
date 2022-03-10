@@ -18,6 +18,33 @@ data class NumberTuple4(
 )
 
 object JConst{
+    const val lazyColumn = "lazyColumn"
+    const val lazyItemScopeFillParentMaxHeight = "lazyItemScopeFillParentMaxHeight"
+    const val lazyItemScopeFillParentMaxWidth = "lazyItemScopeFillParentMaxWidth"
+    const val fraction = "fraction"
+    const val lazyItemScopeFillParentMaxSize = "lazyItemScopeFillParentMaxSize"
+    const val userScrollEnabled = "userScrollEnabled"
+    const val reverseLayout = "reverseLayout"
+    const val lazyRow = "lazyRow"
+    const val disableSelection = "disableSelection"
+    const val selectionContainer = "selectionContainer"
+    const val blurRadius = "blurRadius"
+    const val shadow = "shadow"
+    const val richText = "richText"
+    const val cursive = "cursive"
+    const val monospace = "monospace"
+    const val serif = "serif"
+    const val sansSerif = "sansSerif"
+    const val default = "default"
+    const val fontFamily = "fontFamily"
+    const val flowColumn = "flowColumn"
+    const val lastLineMainAxisAlignment = "lastLineMainAxisAlignment"
+    const val crossAxisSpacing = "crossAxisSpacing"
+    const val crossAxisAlignment = "crossAxisAlignment"
+    const val mainAxisSpacing = "mainAxisSpacing"
+    const val mainAxisAlignment = "mainAxisAlignment"
+    const val expand = "expand"
+    const val mainAxisSize = "mainAxisSize"
     const val flowRow = "flowRow"
     const val maxLines = "maxLines"
     const val softWrap = "softWrap"
@@ -296,6 +323,11 @@ fun J.forEachChildView(block: @Composable (J)->Unit){
             block(child)
         }
     }
+}
+
+val J.children: List<J>
+get(){
+    return (this[JConst.children]?.asArray()?.children)?: emptyList()
 }
 
 @Composable
