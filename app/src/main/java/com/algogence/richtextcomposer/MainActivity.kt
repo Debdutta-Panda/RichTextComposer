@@ -4,11 +4,27 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.*
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.vector.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import com.algogence.articleview.*
+import com.algogence.articleview.JConst.textAlign
 import com.algogence.richtextcomposer.ui.theme.RichTextComposerTheme
 
 
@@ -22,6 +38,15 @@ class MainActivity : ComponentActivity() {
                         "verticalArrangement":"center",
                         "horizontalAlignment":"center",
                         "children":[
+                            {
+                                "type":"svg",
+                                "modifiers":[
+                                    {
+                                        "name":"size",
+                                        "value":120
+                                    }
+                                ]
+                            },
                             {
                                 "type":"image",
                                 "url":"https://img.youtube.com/vi/PLXkFL2kZvc/mqdefault.jpg",
