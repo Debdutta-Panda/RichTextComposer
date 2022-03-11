@@ -15,3 +15,6 @@ dependencyResolutionManagement {
 rootProject.name = "RichTextComposer"
 include ':app'
 include ':ArticleView'
+include ':jlatexmath-font-cyrillic'
+include ':jlatexmath-font-greek'
+include ':jlatexmath'

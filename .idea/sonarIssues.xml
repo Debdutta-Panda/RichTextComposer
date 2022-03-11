@@ -118,6 +118,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/jlatexmath/GenericDOMImplementation.java">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/svg/SVGImageView.java">
           <value>
             <set />
@@ -208,6 +213,21 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/jlatexmath-font-cyrillic/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/jlatexmath-font-greek/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/jlatexmath/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../androidsvg/androidsvg/publish.gradle">
           <value>
             <set />
@@ -224,6 +244,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/../androidsvgsampleapp/gradle/wrapper/gradle-wrapper.properties">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../jlatexmath-android/app/src/main/java/ru/noties/jlatexmath/android/app/MainActivity.java">
           <value>
             <set />
           </value>

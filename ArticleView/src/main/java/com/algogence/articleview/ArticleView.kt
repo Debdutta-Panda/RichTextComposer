@@ -3,8 +3,10 @@ package com.algogence.articleview
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.view.ViewGroup
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,11 +30,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -46,11 +51,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.graphics.drawable.toBitmap
 import com.algogence.articleview.svg.SVG
 import com.algogence.articleview.svg.SVGImageView
 import com.algogence.articleview.youtubevideoviewlibrary.YoutubeView
 import com.google.accompanist.flowlayout.*
+import com.google.android.material.R
 import com.skydoves.landscapist.glide.GlideImage
+import ru.noties.jlatexmath.JLatexMathDrawable
 
 @Composable
 fun renderView(
@@ -58,6 +66,14 @@ fun renderView(
     scope: Any? = null
 ) {
     when(j.viewType){
+        JConst.latex->{
+            val d = getLatexDrawable(j.viewValue)
+            Image(
+                bitmap = d.toBitmap().asImageBitmap(),
+                contentDescription = null,
+                modifier = composeModifier(j,scope),
+            )
+        }
         JConst.youtube->{
             Box(
                 modifier = composeModifier(j,scope),
@@ -264,6 +280,13 @@ fun renderView(
             }
         }
     }
+}
+
+fun getLatexDrawable(viewValue: String): Drawable {
+    return JLatexMathDrawable
+        .builder(viewValue)
+        .textSize(100f)
+        .build()
 }
 
 fun onPlayClick(context: Context, viewUrl: String) {
