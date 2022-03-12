@@ -20,6 +20,23 @@ class MainActivity : ComponentActivity() {
                         "horizontalAlignment":"center",
                         "children":[
                             {
+                                "type":"audio",
+                                "url":"https://app.learnpea.com/public/Teri-Chahat-Ke-Deewane.mp3"
+                            },
+                            {
+                                "type":"lottie",
+                                "url":"https://assets1.lottiefiles.com/packages/lf20_uwR49r.json",
+                                "modifiers":[
+                                    {
+                                        "name":"fillMaxWidth"
+                                    },
+                                    {
+                                        "name":"height",
+                                        "value":120
+                                    }
+                                ]
+                            },
+                            {
                                 "type":"latex",
                                 "value":"\\[ \\int_{a}^{b} x^2 \\,dx \\]",
                                 "modifiers":[
@@ -34,6 +51,7 @@ class MainActivity : ComponentActivity() {
                             },
                             {
                                 "type":"svg",
+                                "value":"<svg height=\"100\"width=\"100\"><circle cx=\"50\"cy=\"50\"r=\"40\"stroke=\"black\"stroke-width=\"3\"fill=\"red\"\/>Sorry,your browser does not support inline SVG.<\/svg>",
                                 "modifiers":[
                                     {
                                         "name":"size",

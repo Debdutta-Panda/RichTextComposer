@@ -1,10 +1,11 @@
 package com.algogence.articleview
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.view.ViewGroup
+import android.media.AudioAttributes
+import android.media.MediaPlayer
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -19,11 +20,13 @@ import androidx.compose.foundation.text.selection.DisableSelection
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
+import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -36,8 +39,6 @@ import androidx.compose.ui.graphics.vector.PathNode
 import androidx.compose.ui.graphics.vector.PathParser
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
@@ -54,11 +55,12 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.graphics.drawable.toBitmap
 import com.algogence.articleview.svg.SVG
 import com.algogence.articleview.svg.SVGImageView
-import com.algogence.articleview.youtubevideoviewlibrary.YoutubeView
 import com.google.accompanist.flowlayout.*
-import com.google.android.material.R
 import com.skydoves.landscapist.glide.GlideImage
+import kotlinx.coroutines.*
 import ru.noties.jlatexmath.JLatexMathDrawable
+import java.lang.Exception
+
 
 @Composable
 fun renderView(
@@ -66,6 +68,15 @@ fun renderView(
     scope: Any? = null
 ) {
     when(j.viewType){
+        JConst.audio->{
+            AudiPlayerView(j.viewUrl)
+        }
+        JConst.lottie->{
+            LottieView(
+                url = j.viewUrl,
+                modifier = composeModifier(j,scope),
+            )
+        }
         JConst.latex->{
             val d = getLatexDrawable(j.viewValue)
             Image(
@@ -103,9 +114,7 @@ fun renderView(
                 factory = { context ->
                     // Creates custom view
                     SVGImageView(context).apply {
-                        setSVG(SVG.getFromString("""
-<svg xmlns="http://www.w3.org/2000/svg" width="96.608px" height="33.616px" viewBox="0 -1149.5 5337.6 1857.5" xmlns:xlink="http://www.w3.org/1999/xlink" style=""><defs><path id="MJX-6-TEX-I-78" d="M52 289Q59 331 106 386T222 442Q257 442 286 424T329 379Q371 442 430 442Q467 442 494 420T522 361Q522 332 508 314T481 292T458 288Q439 288 427 299T415 328Q415 374 465 391Q454 404 425 404Q412 404 406 402Q368 386 350 336Q290 115 290 78Q290 50 306 38T341 26Q378 26 414 59T463 140Q466 150 469 151T485 153H489Q504 153 504 145Q504 144 502 134Q486 77 440 33T333 -11Q263 -11 227 52Q186 -10 133 -10H127Q78 -10 57 16T35 71Q35 103 54 123T99 143Q142 143 142 101Q142 81 130 66T107 46T94 41L91 40Q91 39 97 36T113 29T132 26Q168 26 194 71Q203 87 217 139T245 247T261 313Q266 340 266 352Q266 380 251 392T217 404Q177 404 142 372T93 290Q91 281 88 280T72 278H58Q52 284 52 289Z"></path><path id="MJX-6-TEX-N-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path><path id="MJX-6-TEX-N-73" d="M295 316Q295 356 268 385T190 414Q154 414 128 401Q98 382 98 349Q97 344 98 336T114 312T157 287Q175 282 201 278T245 269T277 256Q294 248 310 236T342 195T359 133Q359 71 321 31T198 -10H190Q138 -10 94 26L86 19L77 10Q71 4 65 -1L54 -11H46H42Q39 -11 33 -5V74V132Q33 153 35 157T45 162H54Q66 162 70 158T75 146T82 119T101 77Q136 26 198 26Q295 26 295 104Q295 133 277 151Q257 175 194 187T111 210Q75 227 54 256T33 318Q33 357 50 384T93 424T143 442T187 447H198Q238 447 268 432L283 424L292 431Q302 440 314 448H322H326Q329 448 335 442V310L329 304H301Q295 310 295 316Z"></path><path id="MJX-6-TEX-N-69" d="M69 609Q69 637 87 653T131 669Q154 667 171 652T188 609Q188 579 171 564T129 549Q104 549 87 564T69 609ZM247 0Q232 3 143 3Q132 3 106 3T56 1L34 0H26V46H42Q70 46 91 49Q100 53 102 60T104 102V205V293Q104 345 102 359T88 378Q74 385 41 385H30V408Q30 431 32 431L42 432Q52 433 70 434T106 436Q123 437 142 438T171 441T182 442H185V62Q190 52 197 50T232 46H255V0H247Z"></path><path id="MJX-6-TEX-N-6E" d="M41 46H55Q94 46 102 60V68Q102 77 102 91T102 122T103 161T103 203Q103 234 103 269T102 328V351Q99 370 88 376T43 385H25V408Q25 431 27 431L37 432Q47 433 65 434T102 436Q119 437 138 438T167 441T178 442H181V402Q181 364 182 364T187 369T199 384T218 402T247 421T285 437Q305 442 336 442Q450 438 463 329Q464 322 464 190V104Q464 66 466 59T477 49Q498 46 526 46H542V0H534L510 1Q487 2 460 2T422 3Q319 3 310 0H302V46H318Q379 46 379 62Q380 64 380 200Q379 335 378 343Q372 371 358 385T334 402T308 404Q263 404 229 370Q202 343 195 315T187 232V168V108Q187 78 188 68T191 55T200 49Q221 46 249 46H265V0H257L234 1Q210 2 183 2T145 3Q42 3 33 0H25V46H41Z"></path><path id="MJX-6-TEX-N-2061" d=""></path><path id="MJX-6-TEX-LO-28" d="M180 96T180 250T205 541T266 770T353 944T444 1069T527 1150H555Q561 1144 561 1141Q561 1137 545 1120T504 1072T447 995T386 878T330 721T288 513T272 251Q272 133 280 56Q293 -87 326 -209T399 -405T475 -531T536 -609T561 -640Q561 -643 555 -649H527Q483 -612 443 -568T353 -443T266 -270T205 -41Z"></path><path id="MJX-6-TEX-I-3C0" d="M132 -11Q98 -11 98 22V33L111 61Q186 219 220 334L228 358H196Q158 358 142 355T103 336Q92 329 81 318T62 297T53 285Q51 284 38 284Q19 284 19 294Q19 300 38 329T93 391T164 429Q171 431 389 431Q549 431 553 430Q573 423 573 402Q573 371 541 360Q535 358 472 358H408L405 341Q393 269 393 222Q393 170 402 129T421 65T431 37Q431 20 417 5T381 -10Q370 -10 363 -7T347 17T331 77Q330 86 330 121Q330 170 339 226T357 318T367 358H269L268 354Q268 351 249 275T206 114T175 17Q164 -11 132 -11Z"></path><path id="MJX-6-TEX-N-36" d="M42 313Q42 476 123 571T303 666Q372 666 402 630T432 550Q432 525 418 510T379 495Q356 495 341 509T326 548Q326 592 373 601Q351 623 311 626Q240 626 194 566Q147 500 147 364L148 360Q153 366 156 373Q197 433 263 433H267Q313 433 348 414Q372 400 396 374T435 317Q456 268 456 210V192Q456 169 451 149Q440 90 387 34T253 -22Q225 -22 199 -14T143 16T92 75T56 172T42 313ZM257 397Q227 397 205 380T171 335T154 278T148 216Q148 133 160 97T198 39Q222 21 251 21Q302 21 329 59Q342 77 347 104T352 209Q352 289 347 316T329 361Q302 397 257 397Z"></path><path id="MJX-6-TEX-LO-29" d="M35 1138Q35 1150 51 1150H56H69Q113 1113 153 1069T243 944T330 771T391 541T416 250T391 -40T330 -270T243 -443T152 -568T69 -649H56Q43 -649 39 -647T35 -637Q65 -607 110 -548Q283 -316 316 56Q324 133 324 251Q324 368 316 445Q278 877 48 1123Q36 1137 35 1138Z"></path></defs><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)"><g data-mml-node="math"><g data-mml-node="mi"><use xlink:href="#MJX-6-TEX-I-78"></use></g><g data-mml-node="mo" transform="translate(849.8, 0)"><use xlink:href="#MJX-6-TEX-N-3D"></use></g><g data-mml-node="mi" transform="translate(1905.6, 0)"><use xlink:href="#MJX-6-TEX-N-73"></use><use xlink:href="#MJX-6-TEX-N-69" transform="translate(394, 0)"></use><use xlink:href="#MJX-6-TEX-N-6E" transform="translate(672, 0)"></use></g><g data-mml-node="mo" transform="translate(3133.6, 0)"><use xlink:href="#MJX-6-TEX-N-2061"></use></g><g data-mml-node="mrow" transform="translate(3133.6, 0)"><g data-mml-node="mo"><use xlink:href="#MJX-6-TEX-LO-28"></use></g><g data-mml-node="mfrac" transform="translate(597, 0)"><g data-mml-node="mi" transform="translate(220, 676)"><use xlink:href="#MJX-6-TEX-I-3C0"></use></g><g data-mml-node="mn" transform="translate(255, -686)"><use xlink:href="#MJX-6-TEX-N-36"></use></g><rect width="770" height="60" x="120" y="220"></rect></g><g data-mml-node="mo" transform="translate(1607, 0)"><use xlink:href="#MJX-6-TEX-LO-29"></use></g></g></g></g></svg>
-                        """.trimIndent()))
+                        setSVG(SVG.getFromString(j.viewValue))
                     }
                 },
                 update = { view ->
@@ -238,7 +247,7 @@ fun renderView(
             )
         }
         JConst.selectionContainer-> {
-            SelectionContainer(modifier = composeModifier(j, scope),) {
+            SelectionContainer(modifier = composeModifier(j, scope)) {
                 j.forEachChildView {
                     renderView(it)
                 }
@@ -279,6 +288,74 @@ fun renderView(
                 }
             }
         }
+    }
+}
+
+@Composable
+fun AudiPlayerView(audioUrl: String) {
+    val progress = remember { mutableStateOf(0f) }
+    val mediaPlayer = remember { MediaPlayer() }
+    val progressJob = remember { Job() }
+
+    fun playAudio() {
+
+        mediaPlayer.setAudioAttributes(
+            AudioAttributes.Builder()
+                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                .build()
+        )
+        mediaPlayer.setOnPreparedListener {
+
+        }
+        val job = CoroutineScope(Dispatchers.IO).launch {
+            while(mediaPlayer.isPlaying){
+                updateProgress()
+                delay(100)
+            }
+        }
+        try {
+            mediaPlayer.setDataSource(audioUrl)
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+
+        } catch (e: Exception) {
+
+        }
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(60.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ){
+        IconButton(onClick = {
+            playAudio()
+        }) {
+            Icon(
+                imageVector = if(mediaPlayer.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                contentDescription = "Play-Pause",
+                tint = Color.Red,
+                modifier = Modifier.size(60.dp)
+            )
+        }
+        fun onChangeProgress(){
+
+        }
+        Spacer(modifier = Modifier.size(8.dp))
+        Slider(
+            modifier = Modifier.fillMaxWidth(),
+            value = progress.value,
+            onValueChange = {
+                progress.value = it
+                onChangeProgress()
+            },
+            colors = SliderDefaults.colors(
+                thumbColor = Color.Gray,
+                activeTrackColor = Color.Red,
+                inactiveTrackColor = Color.Gray,
+            )
+        )
     }
 }
 
