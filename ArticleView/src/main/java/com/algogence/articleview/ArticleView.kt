@@ -3,9 +3,6 @@ package com.algogence.articleview
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Drawable
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -22,11 +19,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
-import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -57,19 +51,63 @@ import com.algogence.articleview.svg.SVG
 import com.algogence.articleview.svg.SVGImageView
 import com.google.accompanist.flowlayout.*
 import com.skydoves.landscapist.glide.GlideImage
-import kotlinx.coroutines.*
 import ru.noties.jlatexmath.JLatexMathDrawable
-import java.lang.Exception
 
+data class Res(
+    val soundWave: Drawable?
+)
 
 @Composable
-fun renderView(
+fun RenderView(
     j: J,
+    res: Res,
     scope: Any? = null
 ) {
     when(j.viewType){
+        JConst.video->{
+            val context = LocalContext.current
+            Button(onClick = {
+                openVideo(context,j.viewUrl)
+            }) {
+                Text("Video")
+            }
+        }
         JConst.audio->{
-            AudiPlayerView(j.viewUrl)
+            Row(
+                modifier = composeModifier(j,scope),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Card(){
+                    res.soundWave?.toBitmap()?.asImageBitmap()?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = "",
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+                val context = LocalContext.current
+                IconButton(onClick = {
+                    openAudio(context,j.viewUrl,j[JConst.title]?.asString()?:"",j[JConst.description]?.asString()?:"")
+                }) {
+                    Icon(
+                        imageVector = Icons.Rounded.PlayArrow,
+                        contentDescription = "Play",
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f, true)
+                    )
+                }
+
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .padding(horizontal = 4.dp)
+                    .background(Color.LightGray)){
+
+                }
+            }
         }
         JConst.lottie->{
             LottieView(
@@ -132,7 +170,7 @@ fun renderView(
             modifier = composeModifier(j,scope)
         ){
             j.forEachChildView {
-                renderView(it)
+                RenderView(it,res)
             }
         }
         JConst.text-> {
@@ -164,7 +202,7 @@ fun renderView(
             horizontalAlignment = getHorizontalAlignment(j)
         ) {
             j.forEachChildView {
-                renderView(it,this)
+                RenderView(it,res,this)
             }
         }
         JConst.row-> Row(
@@ -173,7 +211,7 @@ fun renderView(
             verticalAlignment = getVerticalAlignment(j)
         ) {
             j.forEachChildView {
-                renderView(it,this)
+                RenderView(it,res, this)
             }
         }
         JConst.card-> Card(
@@ -185,7 +223,7 @@ fun renderView(
             border = getBorderStroke(j)
         ){
             j.forEachChildView {
-                renderView(it)
+                RenderView(it,res,)
             }
         }
         JConst.box-> Box(
@@ -193,7 +231,7 @@ fun renderView(
             contentAlignment = getContentAlignment(j)
         ){
             j.forEachChildView {
-                renderView(it,this)
+                RenderView(it,res,this)
             }
         }
         JConst.icon-> Icon(
@@ -214,7 +252,7 @@ fun renderView(
                 lastLineMainAxisAlignment = getLastLineMainAxisAlignment(j,mainAxisAlignment)
             ){
                 j.forEachChildView {
-                    renderView(it)
+                    RenderView(it,res,)
                 }
             }
         }
@@ -230,7 +268,7 @@ fun renderView(
                 lastLineMainAxisAlignment = getLastLineMainAxisAlignment(j,mainAxisAlignment)
             ){
                 j.forEachChildView {
-                    renderView(it)
+                    RenderView(it,res,)
                 }
             }
         }
@@ -249,14 +287,14 @@ fun renderView(
         JConst.selectionContainer-> {
             SelectionContainer(modifier = composeModifier(j, scope)) {
                 j.forEachChildView {
-                    renderView(it)
+                    RenderView(it,res,)
                 }
             }
         }
         JConst.disableSelection-> {
             DisableSelection {
                 j.forEachChildView {
-                    renderView(it)
+                    RenderView(it,res,)
                 }
             }
         }
@@ -270,7 +308,7 @@ fun renderView(
                 userScrollEnabled = isUserScrollEnabled(j)
             ){
                 items(j.children){
-                    renderView(it,this)
+                    RenderView(it,res,this)
                 }
             }
         }
@@ -284,80 +322,27 @@ fun renderView(
                 userScrollEnabled = isUserScrollEnabled(j)
             ){
                 items(j.children){
-                    renderView(it,this)
+                    RenderView(it,res,this)
                 }
             }
         }
     }
 }
 
-@Composable
-fun AudiPlayerView(audioUrl: String) {
-    val progress = remember { mutableStateOf(0f) }
-    val mediaPlayer = remember { MediaPlayer() }
-    val progressJob = remember { Job() }
-
-    fun playAudio() {
-
-        mediaPlayer.setAudioAttributes(
-            AudioAttributes.Builder()
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build()
-        )
-        mediaPlayer.setOnPreparedListener {
-
-        }
-        val job = CoroutineScope(Dispatchers.IO).launch {
-            while(mediaPlayer.isPlaying){
-                updateProgress()
-                delay(100)
-            }
-        }
-        try {
-            mediaPlayer.setDataSource(audioUrl)
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-
-        } catch (e: Exception) {
-
-        }
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(60.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ){
-        IconButton(onClick = {
-            playAudio()
-        }) {
-            Icon(
-                imageVector = if(mediaPlayer.isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                contentDescription = "Play-Pause",
-                tint = Color.Red,
-                modifier = Modifier.size(60.dp)
-            )
-        }
-        fun onChangeProgress(){
-
-        }
-        Spacer(modifier = Modifier.size(8.dp))
-        Slider(
-            modifier = Modifier.fillMaxWidth(),
-            value = progress.value,
-            onValueChange = {
-                progress.value = it
-                onChangeProgress()
-            },
-            colors = SliderDefaults.colors(
-                thumbColor = Color.Gray,
-                activeTrackColor = Color.Red,
-                inactiveTrackColor = Color.Gray,
-            )
-        )
-    }
+fun openVideo(context: Context, viewUrl: String) {
+    var intent = Intent(context,VideoGenericActivity::class.java)
+    context.startActivity(intent)
 }
+
+fun openAudio(context: Context, viewUrl: String, title: String, description: String) {
+    val intent = Intent(context,AudioActivity::class.java).apply {
+        putExtra("url",viewUrl)
+        putExtra("title",title)
+        putExtra("description",description)
+    }
+    context.startActivity(intent)
+}
+
 
 fun getLatexDrawable(viewValue: String): Drawable {
     return JLatexMathDrawable

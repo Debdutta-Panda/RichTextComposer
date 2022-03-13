@@ -13,6 +13,16 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../AudioPlayer/app/src/main/AndroidManifest.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../AudioPlayer/app/src/main/java/com/algogence/audioplayer/MainActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../Markwon/app-sample/build.gradle">
           <value>
             <set />
@@ -29,6 +39,21 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/ArticleView.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/AudioActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/AudioPlayer.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/AudioVisualizer.kt">
           <value>
             <set />
           </value>
@@ -53,6 +78,11 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/MarqueeText.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/MyPathBuilder.kt">
           <value>
             <set />
@@ -69,6 +99,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/SvgView.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/VideoGenericActivity.kt">
           <value>
             <set />
           </value>
@@ -184,6 +219,16 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/res/layout/activity_video.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/res/layout/activity_video_generic.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/res/values/themes.xml">
           <value>
             <set />
           </value>

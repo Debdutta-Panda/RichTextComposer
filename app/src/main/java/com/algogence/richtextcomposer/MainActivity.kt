@@ -4,8 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.core.content.ContextCompat
 import com.algogence.articleview.J
-import com.algogence.articleview.renderView
+import com.algogence.articleview.Res
+import com.algogence.articleview.RenderView
 import com.algogence.richtextcomposer.ui.theme.RichTextComposerTheme
 
 
@@ -20,8 +22,22 @@ class MainActivity : ComponentActivity() {
                         "horizontalAlignment":"center",
                         "children":[
                             {
+                                "type":"video"
+                            },
+                            {
                                 "type":"audio",
-                                "url":"https://app.learnpea.com/public/Teri-Chahat-Ke-Deewane.mp3"
+                                "url":"https://app.learnpea.com/public/Teri-Chahat-Ke-Deewane.mp3",
+                                "title":"This is title, but long and very long also, it can not be populated fully, so its moving",
+                                "description":"This is description",
+                                "modifiers":[
+                                    {
+                                        "name":"fillMaxWidth"
+                                    },
+                                    {
+                                        "name":"height",
+                                        "value":60
+                                    }
+                                ]
                             },
                             {
                                 "type":"lottie",
@@ -150,7 +166,7 @@ class MainActivity : ComponentActivity() {
         convertToSvg()
         setContent {
             RichTextComposerTheme {
-                render()
+                Render()
             }
         }
     }
@@ -160,8 +176,10 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun render() {
-        renderView(j, this)
+    private fun Render() {
+        RenderView(j, Res(
+            soundWave = ContextCompat.getDrawable(this,R.drawable.ic_sound_svgrepo_com)
+        ),this)
     }
 }
 
