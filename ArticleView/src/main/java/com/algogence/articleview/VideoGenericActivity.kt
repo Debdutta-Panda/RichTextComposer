@@ -31,7 +31,7 @@ class VideoGenericActivity : AppCompatActivity() {
         val mediaDataSourceFactory: DataSource.Factory = DefaultDataSource.Factory(this)
 
         val mediaSource = ProgressiveMediaSource.Factory(mediaDataSourceFactory).createMediaSource(
-            MediaItem.fromUri(STREAM_URL))
+            MediaItem.fromUri(intent?.getStringExtra("url")?:""))
 
         val mediaSourceFactory: MediaSourceFactory = DefaultMediaSourceFactory(mediaDataSourceFactory)
 
@@ -73,9 +73,5 @@ class VideoGenericActivity : AppCompatActivity() {
         super.onStop()
 
         if (Util.SDK_INT > 23) releasePlayer()
-    }
-
-    companion object {
-        const val STREAM_URL = "http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4"
     }
 }

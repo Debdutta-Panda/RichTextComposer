@@ -58,7 +58,17 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/ChatServer.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/ComposableNode.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/GameActivity.kt">
           <value>
             <set />
           </value>
@@ -89,6 +99,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/PathBuilder.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/RestClient.kt">
           <value>
             <set />
           </value>
@@ -218,12 +233,22 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/res/layout/activity_game.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/res/layout/activity_video.xml">
           <value>
             <set />
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/res/layout/activity_video_generic.xml">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/res/values/strings.xml">
           <value>
             <set />
           </value>
@@ -259,6 +284,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/app/src/main/java/com/algogence/richtextcomposer/svg/SVGParser.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/app/src/main/res/layout/activity_game.xml">
           <value>
             <set />
           </value>

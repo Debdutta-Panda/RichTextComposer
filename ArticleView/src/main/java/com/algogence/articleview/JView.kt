@@ -18,6 +18,7 @@ data class NumberTuple4(
 )
 
 object JConst{
+    const val game = "game"
     const val video = "video"
     const val description = "description"
     const val title = "title"

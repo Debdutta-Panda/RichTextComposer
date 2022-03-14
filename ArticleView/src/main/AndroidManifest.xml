@@ -10,6 +10,14 @@
     <application
         android:usesCleartextTraffic="true">
         <activity
+            android:name=".GameActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false"
+            android:label="@string/title_activity_game"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"
+            android:screenOrientation="portrait"
+            />
+        <activity
             android:name=".VideoGenericActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"

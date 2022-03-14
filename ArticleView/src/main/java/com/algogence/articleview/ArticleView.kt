@@ -20,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.sharp.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,12 +65,35 @@ fun RenderView(
     scope: Any? = null
 ) {
     when(j.viewType){
-        JConst.video->{
+        JConst.game->{
             val context = LocalContext.current
             Button(onClick = {
-                openVideo(context,j.viewUrl)
+                openGame(context,j.viewUrl)
             }) {
-                Text("Video")
+                Text("Open")
+            }
+        }
+        JConst.video->{
+            Box(
+                modifier = composeModifier(j,scope),
+                contentAlignment = Alignment.Center
+            ){
+                GlideImage(
+                    imageModel = j[JConst.thumbnail]?.asString(),
+                    contentScale = ContentScale.Crop,
+                    modifier = composeModifier(j,scope)
+                )
+                val context = LocalContext.current
+                IconButton(
+                    onClick = { openVideo(context,j.viewUrl) },
+                ) {
+                    Icon(
+                        imageVector = Icons.Sharp.PlayArrow,
+                        tint = Color.Red,
+                        contentDescription = "Play",
+                        modifier = Modifier.size(64.dp)
+                    )
+                }
             }
         }
         JConst.audio->{
@@ -329,8 +353,17 @@ fun RenderView(
     }
 }
 
+fun openGame(context: Context, viewUrl: String) {
+    var intent = Intent(context,GameActivity::class.java).apply {
+        putExtra("url",viewUrl)
+    }
+    context.startActivity(intent)
+}
+
 fun openVideo(context: Context, viewUrl: String) {
-    var intent = Intent(context,VideoGenericActivity::class.java)
+    var intent = Intent(context,VideoGenericActivity::class.java).apply {
+        putExtra("url",viewUrl)
+    }
     context.startActivity(intent)
 }
 

@@ -22,7 +22,22 @@ class MainActivity : ComponentActivity() {
                         "horizontalAlignment":"center",
                         "children":[
                             {
-                                "type":"video"
+                                "type":"game",
+                                "url":"https://learnpea.com/game.html"
+                            },
+                            {
+                                "type":"video",
+                                "url":"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+                                "thumbnail":"https://picsum.photos/200/300",
+                                "modifiers":[
+                                    {
+                                        "name":"fillMaxWidth"
+                                    },
+                                    {
+                                        "name":"height",
+                                        "value":180
+                                    }
+                                ]
                             },
                             {
                                 "type":"audio",
