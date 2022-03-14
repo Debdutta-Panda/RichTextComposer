@@ -22,8 +22,18 @@ class MainActivity : ComponentActivity() {
                         "horizontalAlignment":"center",
                         "children":[
                             {
-                                "type":"game",
-                                "url":"https://learnpea.com/game.html"
+                                "type":"webpage",
+                                "url":"https://learnpea.com/game.html",
+                                "thumbnail":"https://picsum.photos/200/300",
+                                "modifiers":[
+                                    {
+                                        "name":"fillMaxWidth"
+                                    },
+                                    {
+                                        "name":"height",
+                                        "value":180
+                                    }
+                                ]
                             },
                             {
                                 "type":"video",
@@ -64,6 +74,10 @@ class MainActivity : ComponentActivity() {
                                     {
                                         "name":"height",
                                         "value":120
+                                    },
+                                    {
+                                        "name":"onClick",
+                                        "url":"https://www.google.com"
                                     }
                                 ]
                             },

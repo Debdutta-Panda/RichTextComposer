@@ -6,6 +6,7 @@ import android.graphics.drawable.Drawable
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.sharp.ArrowForward
 import androidx.compose.material.icons.sharp.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -64,13 +66,28 @@ fun RenderView(
     res: Res,
     scope: Any? = null
 ) {
+    val context = LocalContext.current
     when(j.viewType){
-        JConst.game->{
-            val context = LocalContext.current
-            Button(onClick = {
-                openGame(context,j.viewUrl)
-            }) {
-                Text("Open")
+        JConst.webpage->{
+            Box(
+                modifier = composeModifier(j,scope,context),
+                contentAlignment = Alignment.Center
+            ){
+                GlideImage(
+                    imageModel = j[JConst.thumbnail]?.asString(),
+                    contentScale = ContentScale.Crop,
+                    modifier = composeModifier(j,scope)
+                )
+                IconButton(
+                    onClick = { openWebpage(context,j.viewUrl) },
+                ) {
+                    Icon(
+                        imageVector = Icons.Sharp.ArrowForward,
+                        tint = Color.Red,
+                        contentDescription = "Play",
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
             }
         }
         JConst.video->{
@@ -83,7 +100,6 @@ fun RenderView(
                     contentScale = ContentScale.Crop,
                     modifier = composeModifier(j,scope)
                 )
-                val context = LocalContext.current
                 IconButton(
                     onClick = { openVideo(context,j.viewUrl) },
                 ) {
@@ -111,7 +127,6 @@ fun RenderView(
                         )
                     }
                 }
-                val context = LocalContext.current
                 IconButton(onClick = {
                     openAudio(context,j.viewUrl,j[JConst.title]?.asString()?:"",j[JConst.description]?.asString()?:"")
                 }) {
@@ -136,7 +151,7 @@ fun RenderView(
         JConst.lottie->{
             LottieView(
                 url = j.viewUrl,
-                modifier = composeModifier(j,scope),
+                modifier = composeModifier(j,scope,context),
             )
         }
         JConst.latex->{
@@ -180,13 +195,6 @@ fun RenderView(
                     }
                 },
                 update = { view ->
-                    // View's been inflated or state read in this block has been updated
-                    // Add logic here if necessary
-
-                    // As selectedItem is read here, AndroidView will recompose
-                    // whenever the state changes
-                    // Example of Compose -> View communication
-                    //view.coordinator.selectedItem = selectedItem.value
                 }
             )
         }
@@ -353,11 +361,14 @@ fun RenderView(
     }
 }
 
-fun openGame(context: Context, viewUrl: String) {
-    var intent = Intent(context,GameActivity::class.java).apply {
+fun openWebpage(context: Context?, viewUrl: String) {
+    if(context==null){
+        return
+    }
+    val intent = Intent(context,WebPageActivity::class.java).apply {
         putExtra("url",viewUrl)
     }
-    context.startActivity(intent)
+    context?.startActivity(intent)
 }
 
 fun openVideo(context: Context, viewUrl: String) {
@@ -905,7 +916,7 @@ fun BoxScopeModifier(scope: Any?,block: BoxScopeBlock): Modifier?{
 }
 
 @Composable
-fun composeModifier(j: J?, scope: Any?): Modifier {
+fun composeModifier(j: J?, scope: Any?,context: Context?=null): Modifier {
     if(j==null){
         return Modifier
     }
@@ -1090,6 +1101,11 @@ fun composeModifier(j: J?, scope: Any?): Modifier {
                     right = value.comp1.dp,
                     bottom = value.comp1.dp,
                 )
+            }
+            JConst.onClick->{
+                Modifier.clickable {
+                    openWebpage(context,it.viewUrl)
+                }
             }
             else -> Modifier
         }

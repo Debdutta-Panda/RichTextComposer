@@ -23,6 +23,16 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/../LearnPea2/app/build.gradle">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/../LearnPea2/app/src/main/java/com/learnpa/screens/Home.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/../Markwon/app-sample/build.gradle">
           <value>
             <set />
@@ -103,6 +113,16 @@
             <set />
           </value>
         </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/Rest.java">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/Rest.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/RestClient.kt">
           <value>
             <set />
@@ -119,6 +139,11 @@
           </value>
         </entry>
         <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/VideoGenericActivity.kt">
+          <value>
+            <set />
+          </value>
+        </entry>
+        <entry key="$PROJECT_DIR$/ArticleView/src/main/java/com/algogence/articleview/WebPageActivity.kt">
           <value>
             <set />
           </value>

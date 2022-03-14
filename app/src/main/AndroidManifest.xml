@@ -13,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.RichTextComposer">
         <activity
-            android:name="com.algogence.articleview.GameActivity"
+            android:name="com.algogence.articleview.WebPageActivity"
             android:exported="false" />
         <activity
             android:name=".CAMLActivity"

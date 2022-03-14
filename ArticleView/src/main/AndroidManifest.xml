@@ -10,7 +10,7 @@
     <application
         android:usesCleartextTraffic="true">
         <activity
-            android:name=".GameActivity"
+            android:name=".WebPageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_game"
